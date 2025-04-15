@@ -45,7 +45,9 @@ jobs:
   
       - name: 下载
         run: |
-          rm -rf 666
+          git clone https://github.com/zhlhlf/xiazai tmp_git --depth=1
+          mv tmp_git/* ./
+          rm -r tmp_git 666
           mkdir 666
           chmod 777 * -R
           bash download.sh "${{ github.event.inputs.URL }}" "${{ github.event.inputs.xcs }}" "${{ github.event.inputs.UA }}"
