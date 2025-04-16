@@ -106,3 +106,4 @@ echo -e "$list"
 
 rm -f input_file_list.txt current_file_list.txt
 kill -8 `ps -A | grep alist | awk -F' ' '{print $1}'` >/dev/null 2>&1
+rm -r alist
