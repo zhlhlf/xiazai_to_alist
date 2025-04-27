@@ -1,0 +1,70 @@
+name: Xiazai
+
+on:
+  workflow_dispatch:
+    inputs:
+      URL:
+        description: 'URL'
+        required: true
+        default: ''
+
+      xcs:
+        description: '线程数'
+        required: true
+        default: '10'
+
+      UA:
+        description: 'UA'
+        required: true
+        default: 'LogStatistic'
+
+      upload:
+        description: '123 tyy2/short_time_files tyy2_crypt'
+        required: false
+        default: ''
+      
+      split:
+        description: 'split'
+        required: true
+        default: 'false'
+        type: boolean
+        
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 更改交换空间并link构建空间
+        uses: zhlhlf/maximize-build-space@master
+        with:
+          swap-size-mb: 8192
+              
+      - name: Checkout
+        uses: actions/checkout@master
+  
+      - name: 下载
+        run: |
+          git clone https://github.com/zhlhlf/xiazai tmp_git --depth=1
+          mv tmp_git/* ./
+          rm -rf tmp_git 666
+          mkdir 666
+          chmod 777 * -R
+          bash download.sh "${{ github.event.inputs.URL }}" "${{ github.event.inputs.xcs }}" "${{ github.event.inputs.UA }}"
+             
+      - name: 检验和化分
+        if: github.event.inputs.split == 'true'
+        run: |
+          ./split.sh
+  
+      - name: 上传文件
+        run: |
+          bash upload.sh "${{ secrets.alist_data }}" "${{ github.event.inputs.upload }}"
+
+      - name: Delete old workflow run
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 2
+          keep_minimum_runs: 2
